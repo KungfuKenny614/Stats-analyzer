@@ -14,6 +14,9 @@ import 'package:stats_analyzer/providers/auth_provider.dart';
 import 'package:stats_analyzer/widgets/performance_chart.dart';
 import 'package:stats_analyzer/widgets/hit_rate_heatmap.dart';
 import 'package:stats_analyzer/models/mlb_outlier_models.dart';
+import 'package:stats_analyzer/screens/watchlist_screen.dart';
+import 'package:stats_analyzer/screens/settings_screen.dart';
+import 'package:stats_analyzer/providers/watchlist_provider.dart';
 
 class ResearchDashboard extends StatelessWidget {
   const ResearchDashboard({super.key});
@@ -99,7 +102,7 @@ class ResearchDashboard extends StatelessWidget {
               ? const Center(child: CircularProgressIndicator())
               : appState.error.isNotEmpty
                   ? _buildErrorWidget(appState)
-                  : _buildResearchWorkspace(context, appState),
+                  : _buildMainContent(context, appState),
         ),
         if (isDesktop) _buildInspectorPanel(context, appState),
       ],
@@ -113,7 +116,7 @@ class ResearchDashboard extends StatelessWidget {
           ? const Center(child: CircularProgressIndicator())
           : appState.error.isNotEmpty
               ? _buildErrorWidget(appState)
-              : _buildResearchWorkspace(context, appState),
+              : _buildMainContent(context, appState),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: appState.selectedNavIndex,
         onTap: (index) => appState.setNavIndex(index),
@@ -122,7 +125,8 @@ class ResearchDashboard extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Players'),
           BottomNavigationBarItem(icon: Icon(Icons.sports_baseball_rounded), label: 'Games'),
           BottomNavigationBarItem(icon: Icon(Icons.analytics_rounded), label: 'Research'),
-          BottomNavigationBarItem(icon: Icon(Icons.lightbulb_rounded), label: 'Insights'),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_rounded), label: 'Watchlist'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings_rounded), label: 'Settings'),
         ],
       ),
     );
@@ -133,10 +137,31 @@ class ResearchDashboard extends StatelessWidget {
     PrimaryNavItem(label: 'Players', icon: Icons.person_rounded),
     PrimaryNavItem(label: 'Games', icon: Icons.sports_baseball_rounded),
     PrimaryNavItem(label: 'Research', icon: Icons.analytics_rounded, badgeCount: 3),
-    PrimaryNavItem(label: 'Insights', icon: Icons.lightbulb_rounded),
+    PrimaryNavItem(label: 'Watchlist', icon: Icons.bookmark_rounded),
+    PrimaryNavItem(label: 'Settings', icon: Icons.settings_rounded),
   ];
 
-  // Main research workspace
+  // Main content switcher
+  Widget _buildMainContent(BuildContext context, AppState appState) {
+    switch (appState.selectedNavIndex) {
+      case 0:
+        return _buildResearchWorkspace(context, appState);
+      case 1:
+        return _buildResearchWorkspace(context, appState);
+      case 2:
+        return _buildGamesTab(context, appState);
+      case 3:
+        return _buildResearchWorkspace(context, appState);
+      case 4:
+        return const WatchlistScreen();
+      case 5:
+        return const SettingsScreen();
+      default:
+        return _buildResearchWorkspace(context, appState);
+    }
+  }
+
+  // Research workspace (existing code)
   Widget _buildResearchWorkspace(BuildContext context, AppState appState) {
     return Container(
       padding: const EdgeInsets.all(DSSpacing.xl),
@@ -203,7 +228,7 @@ class ResearchDashboard extends StatelessWidget {
     );
   }
 
-  // Secondary Nav
+  // Secondary Nav (tabs)
   Widget _buildSecondaryNav(AppState appState) {
     final tabs = ['Overview', 'Odds', 'Splits', 'History', 'Projections', 'Analysis'];
     return Container(
@@ -238,7 +263,7 @@ class ResearchDashboard extends StatelessWidget {
     );
   }
 
-  // Metrics
+  // Metrics row
   Widget _buildMetricsRow(AppState appState) {
     final total = appState.filteredMarkets.length;
     final evPositive = appState.filteredMarkets.where((m) {
@@ -421,6 +446,48 @@ class ResearchDashboard extends StatelessWidget {
     );
   }
 
+  // Games tab
+  Widget _buildGamesTab(BuildContext context, AppState appState) {
+    final games = appState.games;
+    if (games.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.sports_baseball_rounded, size: 64, color: DSColors.textTertiary),
+            const SizedBox(height: 16),
+            Text('No games today', style: DSTypography.headingSM),
+          ],
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.all(DSSpacing.lg),
+      itemCount: games.length,
+      itemBuilder: (context, index) {
+        final game = games[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: DSSpacing.md),
+          child: ListTile(
+            leading: Icon(
+              game.isLive ? Icons.circle_rounded : Icons.sports_baseball_rounded,
+              color: game.isLive ? DSColors.negative : DSColors.textTertiary,
+            ),
+            title: Text('${game.awayTeam} @ ${game.homeTeam}'),
+            subtitle: Text('${game.awayScore} - ${game.homeScore}  •  ${game.inning}'),
+            trailing: Text(
+              game.status,
+              style: TextStyle(
+                color: game.isLive ? DSColors.negative : DSColors.textSecondary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // Error widget
   Widget _buildErrorWidget(AppState appState) {
     return Center(
@@ -446,7 +513,7 @@ class ResearchDashboard extends StatelessWidget {
     );
   }
 
-  // Inspector Panel with Tabs
+  // Inspector Panel (with Watchlist toggle)
   Widget _buildInspectorPanel(BuildContext context, AppState appState) {
     final playerName = appState.selectedPlayerName;
     final analytics = appState.selectedAnalytics;
@@ -462,23 +529,58 @@ class ResearchDashboard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header
+          // Header with watchlist icon
           Padding(
             padding: const EdgeInsets.all(DSSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Inspector', style: DSTypography.caption),
-                const SizedBox(height: 4),
-                Text(
-                  playerName,
-                  style: DSTypography.headingSM.copyWith(fontWeight: FontWeight.w700),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Inspector', style: DSTypography.caption),
+                          const SizedBox(height: 4),
+                          Text(
+                            playerName,
+                            style: DSTypography.headingSM.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          if (market != null)
+                            Text(
+                              '${market.team} vs ${market.opponent} | ${market.marketType}',
+                              style: DSTypography.bodySM.copyWith(color: DSColors.textSecondary),
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (market != null)
+                      Consumer<WatchlistProvider>(
+                        builder: (context, watchlist, child) {
+                          final isInWatchlist = watchlist.contains(market.playerId);
+                          return IconButton(
+                            icon: Icon(
+                              isInWatchlist ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                              color: isInWatchlist ? DSColors.info : DSColors.textTertiary,
+                            ),
+                            onPressed: () {
+                              if (isInWatchlist) {
+                                watchlist.removeItem(market.playerId);
+                              } else {
+                                watchlist.addItem({
+                                  'id': market.playerId,
+                                  'name': market.playerName,
+                                  'team': market.team,
+                                  'market': market.marketType,
+                                });
+                              }
+                            },
+                          );
+                        },
+                      ),
+                  ],
                 ),
-                if (market != null)
-                  Text(
-                    '${market.team} vs ${market.opponent} | ${market.marketType}',
-                    style: DSTypography.bodySM.copyWith(color: DSColors.textSecondary),
-                  ),
                 const SizedBox(height: DSSpacing.sm),
                 Row(
                   children: [
@@ -497,7 +599,7 @@ class ResearchDashboard extends StatelessWidget {
             ),
           ),
           const Divider(height: 0),
-          // Tabs
+          // Tabs (Matchup, Injuries, Insights)
           Expanded(
             child: DefaultTabController(
               length: 3,
