@@ -1,20 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stats_analyzer/providers/auth_provider.dart';
+import 'package:stats_analyzer/providers/app_state.dart';
+import 'package:stats_analyzer/screens/login_screen.dart';
+import 'package:stats_analyzer/screens/research_dashboard.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Stats Analyzer',
-      theme: ThemeData.dark(),
-      home: const Scaffold(
-        body: Center(
-          child: Text('DiamondEdge Stat Analyzer v2.4.1'),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AppState()..loadData()),
+      ],
+      child: MaterialApp(
+        title: 'DiamondEdge Research',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+          fontFamily: 'Inter',
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF1A73E8),
+            secondary: Color(0xFF1A73E8),
+            surface: Color(0xFFFFFFFF),
+            background: Color(0xFFF8F9FA),
+          ),
+          cardTheme: CardTheme(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: const Color(0xFFE0E0E0).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: const Color(0xFFF5F5F5),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            hintStyle: const TextStyle(
+              color: Color(0xFF9AA0A6),
+              fontSize: 14,
+            ),
+          ),
+          useMaterial3: true,
         ),
+        home: const AuthWrapper(),
+        routes: {
+          '/dashboard': (context) => ResearchDashboard(),
+        },
       ),
     );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    
+    if (auth.isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
+    if (auth.isAuthenticated) {
+      return ResearchDashboard();
+    }
+    
+    return const LoginScreen();
   }
 }

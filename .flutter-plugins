@@ -1,4 +1,10 @@
 # This is a generated file; do not edit or check into version control.
+connectivity_plus=/home/tijuan/.pub-cache/hosted/pub.dev/connectivity_plus-5.0.2/
+flutter_local_notifications=/home/tijuan/.pub-cache/hosted/pub.dev/flutter_local_notifications-15.1.3/
+flutter_local_notifications_linux=/home/tijuan/.pub-cache/hosted/pub.dev/flutter_local_notifications_linux-4.0.1/
+path_provider=/home/tijuan/.pub-cache/hosted/pub.dev/path_provider-2.1.4/
+path_provider_android=/home/tijuan/.pub-cache/hosted/pub.dev/path_provider_android-2.2.4/
+path_provider_foundation=/home/tijuan/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1/
 path_provider_linux=/home/tijuan/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
 path_provider_windows=/home/tijuan/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
 shared_preferences=/home/tijuan/.pub-cache/hosted/pub.dev/shared_preferences-2.2.3/
@@ -7,3 +13,4 @@ shared_preferences_foundation=/home/tijuan/.pub-cache/hosted/pub.dev/shared_pref
 shared_preferences_linux=/home/tijuan/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1/
 shared_preferences_web=/home/tijuan/.pub-cache/hosted/pub.dev/shared_preferences_web-2.4.1/
 shared_preferences_windows=/home/tijuan/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.4.1/
+sqflite=/home/tijuan/.pub-cache/hosted/pub.dev/sqflite-2.3.3+1/
