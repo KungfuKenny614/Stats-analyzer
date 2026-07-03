@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const AuthWrapper(),
         routes: {
-          '/dashboard': (context) => ResearchDashboard(),
+          '/dashboard': (context) => const ResearchDashboard(),
         },
       ),
     );
@@ -72,19 +72,12 @@ class AuthWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    
     if (auth.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    
     if (auth.isAuthenticated) {
-      return ResearchDashboard();
+      return const ResearchDashboard();
     }
-    
     return const LoginScreen();
   }
 }
