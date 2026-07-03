@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DiamondEdge Stat Analyzer',
+      title: 'Stat Analyzer',
       theme: ThemeData.dark(),
       home: const Scaffold(
         body: Center(
