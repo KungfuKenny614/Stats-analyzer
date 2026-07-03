@@ -11,6 +11,8 @@ import 'package:stats_analyzer/design_system/components/tables/data_grid.dart';
 import 'package:stats_analyzer/design_system/tokens/elevation.dart';
 import 'package:stats_analyzer/providers/app_state.dart';
 import 'package:stats_analyzer/providers/auth_provider.dart';
+import 'package:stats_analyzer/widgets/performance_chart.dart';
+import 'package:stats_analyzer/widgets/hit_rate_heatmap.dart';
 
 class ResearchDashboard extends StatelessWidget {
   const ResearchDashboard({super.key});
@@ -19,79 +21,127 @@ class ResearchDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DSColors.background,
-      body: Consumer2<AppState, AuthProvider>(
-        builder: (context, appState, authProvider, child) {
-          return Column(
-            children: [
-              // Global Navigation
-              GlobalNav(
-                title: 'DiamondEdge',
-                league: appState.selectedLeague,
-                onSearch: () => _showCommandPalette(context),
-                onNotifications: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Notifications coming soon!')),
-                  );
-                },
-                userAvatar: authProvider.user != null
-                    ? CircleAvatar(
-                        backgroundColor: DSColors.infoSurface,
-                        radius: 14,
-                        child: Text(
-                          authProvider.userName.isNotEmpty
-                              ? authProvider.userName.substring(0, 1).toUpperCase()
-                              : 'U',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: DSColors.info,
-                          ),
-                        ),
-                      )
-                    : null,
-                onSignOut: () async {
-                  await authProvider.signOut();
-                },
-              ),
-              
-              // Main workspace
-              Expanded(
-                child: Row(
-                  children: [
-                    // Primary Navigation (Left Rail)
-                    PrimaryNav(
-                      items: _navItems,
-                      selectedIndex: appState.selectedNavIndex,
-                    ),
-                    
-                    // Workspace
-                    Expanded(
-                      child: appState.isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : appState.error.isNotEmpty
-                              ? _buildErrorWidget(appState)
-                              : _buildWorkspace(context, appState),
-                    ),
-                    
-                    // Inspector Panel (Right)
-                    _buildInspectorPanel(context, appState),
-                  ],
-                ),
-              ),
-            ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Determine layout type
+          final isDesktop = constraints.maxWidth > 1200;
+          final isTablet = constraints.maxWidth > 800 && constraints.maxWidth <= 1200;
+          final isMobile = constraints.maxWidth <= 800;
+
+          return Consumer2<AppState, AuthProvider>(
+            builder: (context, appState, authProvider, child) {
+              return Column(
+                children: [
+                  // Global Navigation
+                  GlobalNav(
+                    title: 'DiamondEdge',
+                    league: appState.selectedLeague,
+                    onSearch: () => _showCommandPalette(context),
+                    onNotifications: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Notifications coming soon!')),
+                      );
+                    },
+                    userAvatar: authProvider.user != null
+                        ? CircleAvatar(
+                            backgroundColor: DSColors.infoSurface,
+                            radius: 14,
+                            child: Text(
+                              authProvider.userName.isNotEmpty
+                                  ? authProvider.userName.substring(0, 1).toUpperCase()
+                                  : 'U',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: DSColors.info,
+                              ),
+                            ),
+                          )
+                        : null,
+                    onSignOut: () async {
+                      await authProvider.signOut();
+                    },
+                  ),
+                  
+                  // Main workspace
+                  Expanded(
+                    child: isMobile
+                        ? _buildMobileLayout(context, appState)
+                        : _buildDesktopLayout(context, appState, isDesktop),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
     );
   }
 
-  static const List<PrimaryNavItem> _navItems = [
-    const PrimaryNavItem(label: 'Markets', icon: Icons.grid_view_rounded),
-    const PrimaryNavItem(label: 'Players', icon: Icons.person_rounded),
-    const PrimaryNavItem(label: 'Games', icon: Icons.sports_baseball_rounded),
-    const PrimaryNavItem(label: 'Research', icon: Icons.analytics_rounded, badgeCount: 3),
-    const PrimaryNavItem(label: 'Alerts', icon: Icons.notifications_rounded),
-    const PrimaryNavItem(label: 'Portfolio', icon: Icons.folder_rounded),
+  // Desktop layout: 3 panels
+  Widget _buildDesktopLayout(BuildContext context, AppState appState, bool isDesktop) {
+    return Row(
+      children: [
+        // Left Rail
+        Container(
+          width: 72,
+          decoration: BoxDecoration(
+            color: DSColors.surface,
+            border: Border(
+              right: BorderSide(
+                color: DSColors.border.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+          ),
+          child: PrimaryNav(
+            items: _navItems,
+            selectedIndex: appState.selectedNavIndex,
+          ),
+        ),
+        // Main Workspace
+        Expanded(
+          child: appState.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : appState.error.isNotEmpty
+                  ? _buildErrorWidget(appState)
+                  : _buildWorkspace(context, appState),
+        ),
+        // Inspector Panel
+        if (isDesktop) _buildInspectorPanel(context, appState),
+      ],
+    );
+  }
+
+  // Mobile layout: bottom nav, single panel
+  Widget _buildMobileLayout(BuildContext context, AppState appState) {
+    return Scaffold(
+      body: appState.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : appState.error.isNotEmpty
+              ? _buildErrorWidget(appState)
+              : _buildWorkspace(context, appState),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: appState.selectedNavIndex,
+        onTap: (index) => appState.setNavIndex(index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'Markets'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Players'),
+          BottomNavigationBarItem(icon: Icon(Icons.sports_baseball_rounded), label: 'Games'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics_rounded), label: 'Research'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications_rounded), label: 'Alerts'),
+        ],
+      ),
+    );
+  }
+
+  final List<PrimaryNavItem> _navItems = const [
+    PrimaryNavItem(label: 'Markets', icon: Icons.grid_view_rounded),
+    PrimaryNavItem(label: 'Players', icon: Icons.person_rounded),
+    PrimaryNavItem(label: 'Games', icon: Icons.sports_baseball_rounded),
+    PrimaryNavItem(label: 'Research', icon: Icons.analytics_rounded, badgeCount: 3),
+    PrimaryNavItem(label: 'Alerts', icon: Icons.notifications_rounded),
+    PrimaryNavItem(label: 'Portfolio', icon: Icons.folder_rounded),
   ];
 
   Widget _buildErrorWidget(AppState appState) {
@@ -469,35 +519,33 @@ class ResearchDashboard extends StatelessWidget {
             
             const SizedBox(height: DSSpacing.md),
             
-            // Recent Form
-            ExpandableCard(
-              title: 'Recent Form',
-              subtitle: 'Last 10 games',
-              child: Column(
-                children: [
-                  _buildFormRow('Hits', '8/10', DSColors.positive),
-                  _buildFormRow('Avg', '26.4', DSColors.info),
-                  _buildFormRow('Min', '34.2', DSColors.textSecondary),
-                ],
+            // Performance Chart
+            if (market != null && analytics != null)
+              ExpandableCard(
+                title: 'Performance Chart',
+                subtitle: 'Last 10 games',
+                child: PerformanceChart(
+                  data: List.generate(10, (i) => (analytics.hitRate * 2 + i * 0.1).clamp(0.0, 3.0)),
+                  title: '${market.marketType} Performance',
+                  lineColor: DSColors.info,
+                  threshold: market.line,
+                ),
               ),
-            ),
             
             const SizedBox(height: DSSpacing.md),
             
-            // Splits
-            ExpandableCard(
-              title: 'Splits',
-              subtitle: 'Performance breakdown',
-              child: Column(
-                children: [
-                  _buildSplitRow('Home', '27.2', 'Away', '24.6'),
-                  _buildSplitRow('vs Good', '24.1', 'vs Bad', '29.7'),
-                  _buildSplitRow('B2B', '22.3', 'Rest', '28.1'),
-                ],
+            // Hit Rate Heatmap
+            if (analytics != null)
+              ExpandableCard(
+                title: 'Hit Rate Splits',
+                subtitle: 'Breakdown by situation',
+                child: HitRateHeatmap(
+                  data: analytics.splits,
+                  title: 'Hit Rates',
+                ),
               ),
-            ),
             
-            const SizedBox(height: DSSpacing.lg),
+            const SizedBox(height: DSSpacing.md),
             
             // Action buttons
             SizedBox(
