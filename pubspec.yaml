@@ -1,14 +1,22 @@
-name: stat_analyzer
-description: DiamondEdge Stat Analyzer
+name: stats_analyzer
+description: DiamondEdge Stat Analyzer - Advanced Sports Analytics Platform with AI/ML
 version: 2.4.1
 publish_to: 'none'
+
 environment:
   sdk: ">=3.0.0 <4.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.0.5
+  fl_chart: ^0.64.0
+  http: ^1.1.0
+  shared_preferences: ^2.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 flutter:
   uses-material-design: true

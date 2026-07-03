@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Stat Analyzer',
+      title: 'Stats Analyzer',
       theme: ThemeData.dark(),
       home: const Scaffold(
         body: Center(
