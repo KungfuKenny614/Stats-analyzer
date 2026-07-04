@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 class DSColors {
+  // Existing colors
   static const Color positive = Color(0xFF00C853);
   static const Color positiveSurface = Color(0xFFE8F5E9);
   static const Color negative = Color(0xFFFF5252);
@@ -32,4 +33,17 @@ class DSColors {
   static const Color statusWarning = Color(0xFFFFA726);
   static const Color statusError = Color(0xFFFF5252);
   static const Color statusInactive = Color(0xFF9E9E9E);
+
+  // Diamond Edge palette (Games page)
+  static const Color deBg = Color(0xFF0A0C10);
+  static const Color deSurface = Color(0xFF13161B);
+  static const Color deSurfaceHover = Color(0xFF191D24);
+  static const Color deBorder = Color(0xFF242830);
+  static const Color deTextPrimary = Color(0xFFF2F3F5);
+  static const Color deTextSecondary = Color(0xFF8B909A);
+  static const Color deAccent = Color(0xFFD4AF37);
+  static const Color deAccentMuted = Color(0xFF8A6E1F);
+  static const Color deClay = Color(0xFFB5542A);
+  static const Color deWin = Color(0xFF22C55E);
+  static const Color deLoss = Color(0xFFEF4444);
 }

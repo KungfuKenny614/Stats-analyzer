@@ -35,7 +35,7 @@ class MLBApiService {
     }
   }
 
-  // Fetch players for a specific game (both teams)
+  // Fetch players for a specific game (with error handling)
   Future<List<MLBPlayer>> fetchGamePlayers(int gamePk) async {
     try {
       final response = await http.get(
@@ -63,7 +63,6 @@ class MLBApiService {
             final stats = value['stats']?['hitting'] as Map<String, dynamic>? ?? {};
             final boxscoreStat = boxscorePlayers[key]?['stats']?['batting'] as Map<String, dynamic>? ?? {};
             
-            // Merge stats
             final avg = (stats['avg'] ?? boxscoreStat['avg'] ?? 0.0).toDouble();
             final ops = (stats['ops'] ?? boxscoreStat['ops'] ?? 0.0).toDouble();
             final hr = stats['hr'] ?? boxscoreStat['homeRuns'] ?? 0;
@@ -71,7 +70,6 @@ class MLBApiService {
             final hits = stats['hits'] ?? boxscoreStat['hits'] ?? 0;
             final games = stats['games'] ?? boxscoreStat['games'] ?? 0;
 
-            // Add player with basic stats
             players.add(MLBPlayer(
               id: playerId,
               fullName: value['fullName'] ?? 'Unknown',
@@ -90,7 +88,8 @@ class MLBApiService {
       }
       return [];
     } catch (e) {
-      print('Error fetching game players: $e');
+      // If the feed is not available (e.g., 404), return empty list
+      print('Error fetching game players for game $gamePk: $e');
       return [];
     }
   }
@@ -139,63 +138,66 @@ class MLBApiService {
     final sportsbooks = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars'];
 
     for (final game in games) {
-      // Fetch players for each game
-      final players = await fetchGamePlayers(game.gamePk);
-      // Take up to 5 players per game
-      final selectedPlayers = players.take(5).toList();
-      
-      for (final player in selectedPlayers) {
-        // Get season stats for better projection
-        final fullPlayer = await fetchPlayerStats(player.id);
-        final playerToUse = fullPlayer ?? player;
+      // Skip games that are not in progress (or we can still try)
+      // If the game is scheduled or final, the live feed might not work
+      // We'll still attempt to fetch, but if it fails we skip.
+      try {
+        final players = await fetchGamePlayers(game.gamePk);
+        if (players.isEmpty) continue; // skip this game
+        final selectedPlayers = players.take(5).toList();
+        
+        for (final player in selectedPlayers) {
+          final fullPlayer = await fetchPlayerStats(player.id) ?? player;
+          final marketTypes = ['Hits', 'Total Bases', 'Home Runs', 'RBI'];
+          for (final marketType in marketTypes) {
+            double line;
+            double baseValue;
+            switch (marketType) {
+              case 'Hits':
+                baseValue = fullPlayer.avg * 3.5;
+                line = (baseValue * 0.9 + 0.5).roundToDouble();
+                break;
+              case 'Total Bases':
+                baseValue = fullPlayer.ops * 1.5;
+                line = (baseValue * 0.9 + 0.5).roundToDouble();
+                break;
+              case 'Home Runs':
+                baseValue = fullPlayer.hr / 162.0 * 0.5;
+                line = (baseValue * 0.8 + 0.5).roundToDouble();
+                break;
+              case 'RBI':
+                baseValue = fullPlayer.rbi / 162.0 * 1.5;
+                line = (baseValue * 0.9 + 0.5).roundToDouble();
+                break;
+              default:
+                line = 1.5;
+            }
+            if (line < 0.5) line = 0.5;
+            
+            final odds = <String, double>{};
+            for (final book in sportsbooks) {
+              final spread = (DateTime.now().millisecondsSinceEpoch % 40 - 20) / 1.0;
+              odds[book] = -110 + spread;
+            }
 
-        // Create markets for hits, total bases, home runs, RBI
-        final marketTypes = ['Hits', 'Total Bases', 'Home Runs', 'RBI'];
-        for (final marketType in marketTypes) {
-          double line;
-          double baseValue;
-          switch (marketType) {
-            case 'Hits':
-              baseValue = playerToUse.avg * 3.5; // approximate hits per game
-              line = (baseValue * 0.9 + 0.5).roundToDouble();
-              break;
-            case 'Total Bases':
-              baseValue = playerToUse.ops * 1.5;
-              line = (baseValue * 0.9 + 0.5).roundToDouble();
-              break;
-            case 'Home Runs':
-              baseValue = playerToUse.hr / 162.0 * 0.5;
-              line = (baseValue * 0.8 + 0.5).roundToDouble();
-              break;
-            case 'RBI':
-              baseValue = playerToUse.rbi / 162.0 * 1.5;
-              line = (baseValue * 0.9 + 0.5).roundToDouble();
-              break;
-            default:
-              line = 1.5;
+            markets.add(MLBNormalizedMarket(
+              playerId: fullPlayer.id.toString(),
+              playerName: fullPlayer.fullName,
+              team: fullPlayer.team,
+              marketType: marketType,
+              line: line,
+              odds: odds,
+              gameId: game.gamePk.toString(),
+              opponent: game.awayTeam == fullPlayer.team ? game.homeTeam : game.awayTeam,
+              isHome: game.homeTeam == fullPlayer.team,
+              timestamp: DateTime.now(),
+            ));
           }
-          // Ensure line is at least 0.5
-          if (line < 0.5) line = 0.5;
-          
-          final odds = <String, double>{};
-          for (final book in sportsbooks) {
-            final spread = (DateTime.now().millisecondsSinceEpoch % 40 - 20) / 1.0;
-            odds[book] = -110 + spread;
-          }
-
-          markets.add(MLBNormalizedMarket(
-            playerId: playerToUse.id.toString(),
-            playerName: playerToUse.fullName,
-            team: playerToUse.team,
-            marketType: marketType,
-            line: line,
-            odds: odds,
-            gameId: game.gamePk.toString(),
-            opponent: game.awayTeam == playerToUse.team ? game.homeTeam : game.awayTeam,
-            isHome: game.homeTeam == playerToUse.team,
-            timestamp: DateTime.now(),
-          ));
         }
+      } catch (e) {
+        // If fetching fails for this game, skip it
+        print('Skipping game ${game.gamePk} due to error: $e');
+        continue;
       }
     }
     return markets;

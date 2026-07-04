@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stats_analyzer/models/alert_models.dart';
+import 'package:stats_analyzer/services/arbitrage_scanner.dart';
+import 'package:stats_analyzer/providers/app_state.dart';
 
 class AlertService {
   static final AlertService _instance = AlertService._internal();
@@ -19,6 +21,7 @@ class AlertService {
       StreamController<BettingAlert>.broadcast();
 
   Timer? _monitorTimer;
+  Timer? _arbitrageTimer;
   bool _isMonitoring = false;
 
   // Getters
@@ -29,7 +32,6 @@ class AlertService {
 
   // Initialize
   Future<void> initialize() async {
-    // Initialize notifications
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -42,28 +44,18 @@ class AlertService {
     );
 
     await _notifications.initialize(initSettings);
-
-    // Load saved alerts
     await _loadAlerts();
-
-    // Load rules
     _loadRules();
-
-    // Request permissions
     await _requestPermissions();
   }
 
-  // Request notification permissions
   Future<void> _requestPermissions() async {
     try {
-      // Android
       final androidPlugin = _notifications.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
       if (androidPlugin != null) {
         await androidPlugin.requestPermission();
       }
-
-      // iOS
       final iosPlugin = _notifications.resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>();
       if (iosPlugin != null) {
@@ -97,11 +89,10 @@ class AlertService {
     }
   }
 
-  // Save alerts - FIXED: properly convert to JSON strings
+  // Save alerts
   Future<void> _saveAlerts() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      // Convert each alert to a JSON string
       final List<String> alertsJson = _alerts.map((a) => jsonEncode(a.toJson())).toList();
       await prefs.setStringList('alerts', alertsJson);
     } catch (e) {
@@ -118,16 +109,11 @@ class AlertService {
   // Add alert
   Future<void> addAlert(BettingAlert alert) async {
     _alerts.insert(0, alert);
-
-    // Keep only last 100 alerts
     if (_alerts.length > 100) {
       _alerts.removeLast();
     }
-
     await _saveAlerts();
     _alertController.add(alert);
-
-    // Send notification
     await _sendNotification(alert);
   }
 
@@ -191,7 +177,6 @@ class AlertService {
 
   // ===================== ALERT GENERATION =====================
 
-  // Generate alerts based on rules
   Future<void> checkAndGenerateAlerts({
     required String playerName,
     required String playerId,
@@ -203,14 +188,10 @@ class AlertService {
   }) async {
     for (final rule in _rules) {
       if (!rule.isActive) continue;
-
-      // Check if rule applies to this player/stat
       if (rule.playerId != null && rule.playerId != playerId) continue;
       if (rule.statType != null && rule.statType != statType) continue;
 
-      // Check if rule should trigger
       if (rule.shouldTrigger(currentValue, previousValue)) {
-        // Generate alert based on rule type
         final alert = _generateAlertFromRule(
           rule: rule,
           playerName: playerName,
@@ -221,7 +202,6 @@ class AlertService {
           ev: ev,
           context: context,
         );
-
         await addAlert(alert);
       }
     }
@@ -276,21 +256,47 @@ class AlertService {
     );
   }
 
+  // ===================== ARBITRAGE SCANNING =====================
+
+  void startArbitrageScanning(AppState appState) {
+    _arbitrageTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      final opportunities = ArbitrageScanner.scan(appState.filteredMarkets);
+      for (final opp in opportunities) {
+        if ((opp['profit'] as double) > 1.0) {
+          _sendArbitrageNotification(opp);
+        }
+      }
+    });
+  }
+
+  void stopArbitrageScanning() {
+    _arbitrageTimer?.cancel();
+    _arbitrageTimer = null;
+  }
+
+  void _sendArbitrageNotification(Map<String, dynamic> opp) {
+    addAlert(BettingAlert(
+      id: 'arb_${DateTime.now().millisecondsSinceEpoch}',
+      type: AlertType.custom,
+      severity: AlertSeverity.high,
+      title: '🔥 Arbitrage Opportunity!',
+      description: '${opp['player1']} vs ${opp['player2']} with ${(opp['profit'] as double).toStringAsFixed(2)}% profit',
+      ev: opp['profit'],
+      timestamp: DateTime.now(),
+    ));
+  }
+
   // ===================== SIMULATE REAL-TIME DATA =====================
 
-  // Start monitoring (simulated for now)
   void startMonitoring() {
     if (_isMonitoring) return;
-
     _isMonitoring = true;
     _monitorTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
       _simulateAlert();
     });
-
     print('🔔 Alert monitoring started');
   }
 
-  // Stop monitoring
   void stopMonitoring() {
     _isMonitoring = false;
     _monitorTimer?.cancel();
@@ -298,7 +304,6 @@ class AlertService {
     print('🔕 Alert monitoring stopped');
   }
 
-  // Simulate alert generation
   void _simulateAlert() {
     final players = [
       'Shohei Ohtani',
@@ -311,7 +316,6 @@ class AlertService {
     final stats = ['Total Bases', 'Home Runs', 'RBI', 'Hits'];
     final random = DateTime.now().millisecondsSinceEpoch % 1000 / 1000;
 
-    // Only generate alert ~15% of the time
     if (random > 0.15) return;
 
     final playerIndex = (random * players.length).toInt();
@@ -333,9 +337,9 @@ class AlertService {
     );
   }
 
-  // Dispose
   void dispose() {
     stopMonitoring();
+    stopArbitrageScanning();
     _alertController.close();
   }
 }
