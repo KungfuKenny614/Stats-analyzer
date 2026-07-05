@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stats_analyzer/providers/app_state.dart';
+import 'package:stats_analyzer/models/mlb_models.dart';
 import 'package:stats_analyzer/design_system/tokens/colors.dart';
 import 'package:stats_analyzer/design_system/tokens/spacing.dart';
 import 'package:stats_analyzer/design_system/tokens/typography.dart';
+import 'package:stats_analyzer/services/odds_service.dart';
+import 'package:stats_analyzer/screens/match_details_screen.dart';
+import 'dart:async';
+
+// ============================================================================
+// DATA MODELS
+// ============================================================================
 
 class TeamFormRecord {
   final List<String> moneyline;
   final List<String> spread;
-  final List<String> totalOver;
-  final List<String> totalUnder;
 
-  TeamFormRecord({
-    required this.moneyline,
-    required this.spread,
-    required this.totalOver,
-    required this.totalUnder,
-  });
+  TeamFormRecord({required this.moneyline, required this.spread});
 
   factory TeamFormRecord.mock({required int games}) {
     final random = DateTime.now().millisecondsSinceEpoch % 100;
@@ -24,62 +25,6 @@ class TeamFormRecord {
     return TeamFormRecord(
       moneyline: List.generate(games, (_) => isWinning && random % 2 == 0 ? 'W' : 'L'),
       spread: List.generate(games, (_) => !isWinning && random % 2 == 1 ? 'W' : 'L'),
-      totalOver: List.generate(games, (_) => random % 3 == 0 ? 'W' : 'L'),
-      totalUnder: List.generate(games, (_) => random % 3 == 1 ? 'W' : 'L'),
-    );
-  }
-}
-
-class TeamInfo {
-  final String name;
-  final String record;
-  final String color;
-  final TeamFormRecord form;
-
-  TeamInfo({
-    required this.name,
-    required this.record,
-    required this.color,
-    required this.form,
-  });
-}
-
-class GameOdds {
-  final Map<String, String> moneyline;
-  final Map<String, String> spread;
-  final Map<String, String> totalOver;
-  final Map<String, String> totalUnder;
-
-  GameOdds({
-    required this.moneyline,
-    required this.spread,
-    required this.totalOver,
-    required this.totalUnder,
-  });
-
-  factory GameOdds.mock({required String away, required String home}) {
-    final random = DateTime.now().millisecondsSinceEpoch % 100;
-    final awayOdds = random > 50 ? -110 + random % 50 : 100 + random % 50;
-    final homeOdds = random > 50 ? -105 - random % 50 : 110 + random % 50;
-    return GameOdds(
-      moneyline: {
-        'awayLabel': '${away}${awayOdds > 0 ? "+" : ""}$awayOdds',
-        'homeLabel': '${home}${homeOdds > 0 ? "+" : ""}$homeOdds',
-      },
-      spread: {
-        'awayLabel': '$away +1.5',
-        'homeLabel': '$home -1.5',
-        'awayPrice': awayOdds > 0 ? '+${awayOdds + 10}' : '${awayOdds - 10}',
-        'homePrice': homeOdds > 0 ? '+${homeOdds - 10}' : '${homeOdds + 10}',
-      },
-      totalOver: {
-        'label': 'Over 8.5',
-        'price': '-110',
-      },
-      totalUnder: {
-        'label': 'Under 8.5',
-        'price': '-110',
-      },
     );
   }
 }
@@ -87,18 +32,87 @@ class GameOdds {
 class GameCardData {
   final String id;
   final String startTime;
-  final TeamInfo away;
-  final TeamInfo home;
-  final GameOdds odds;
+  final String awayName;
+  final String homeName;
+  final String awayRecord;
+  final String homeRecord;
+  final String awayColor;
+  final String homeColor;
+  final TeamFormRecord awayForm;
+  final TeamFormRecord homeForm;
+  final List<String> totalOverForm;
+  final List<String> totalUnderForm;
+  final Map<String, String> odds;
 
   GameCardData({
     required this.id,
     required this.startTime,
-    required this.away,
-    required this.home,
+    required this.awayName,
+    required this.homeName,
+    required this.awayRecord,
+    required this.homeRecord,
+    required this.awayColor,
+    required this.homeColor,
+    required this.awayForm,
+    required this.homeForm,
+    required this.totalOverForm,
+    required this.totalUnderForm,
     required this.odds,
   });
+
+  factory GameCardData.fromMLBGame(MLBGame game, {Map<String, String>? odds}) {
+    final awayWin = game.awayScore > game.homeScore;
+    final homeWin = game.homeScore > game.awayScore;
+    final isFinal = game.status == 'Final' || game.status == 'In Progress';
+    final awayForm = TeamFormRecord(
+      moneyline: isFinal ? List.filled(5, awayWin ? 'W' : 'L') : ['-', '-', '-', '-', '-'],
+      spread: isFinal ? List.filled(5, awayWin ? 'W' : 'L') : ['-', '-', '-', '-', '-'],
+    );
+    final homeForm = TeamFormRecord(
+      moneyline: isFinal ? List.filled(5, homeWin ? 'W' : 'L') : ['-', '-', '-', '-', '-'],
+      spread: isFinal ? List.filled(5, homeWin ? 'W' : 'L') : ['-', '-', '-', '-', '-'],
+    );
+    final total = game.awayScore + game.homeScore;
+    final overHit = total > 8;
+    final underHit = total < 8;
+    final totalOverForm = isFinal ? List.filled(5, overHit ? 'W' : 'L') : ['-', '-', '-', '-', '-'];
+    final totalUnderForm = isFinal ? List.filled(5, underHit ? 'W' : 'L') : ['-', '-', '-', '-', '-'];
+
+    final colors = {
+      'Los Angeles Dodgers': '#005A9C',
+      'New York Yankees': '#0C2340',
+      'Boston Red Sox': '#BD3039',
+      'New York Mets': '#002B5C',
+      'Philadelphia Phillies': '#E8182A',
+      'Chicago Cubs': '#0E3386',
+      'St. Louis Cardinals': '#C41E3A',
+      'Houston Astros': '#EB6E1F',
+      'Texas Rangers': '#003278',
+      'Atlanta Braves': '#0C1A3C',
+      'San Francisco Giants': '#FD5A1E',
+      'San Diego Padres': '#2F241D',
+    };
+    return GameCardData(
+      id: game.gamePk.toString(),
+      startTime: game.gameTime.isNotEmpty ? game.gameTime.substring(11, 16) : 'TBD',
+      awayName: game.awayTeam,
+      homeName: game.homeTeam,
+      awayRecord: '--',
+      homeRecord: '--',
+      awayColor: colors[game.awayTeam] ?? '#1A73E8',
+      homeColor: colors[game.homeTeam] ?? '#FF5252',
+      awayForm: awayForm,
+      homeForm: homeForm,
+      totalOverForm: totalOverForm,
+      totalUnderForm: totalUnderForm,
+      odds: odds ?? {},
+    );
+  }
 }
+
+// ============================================================================
+// UI COMPONENTS
+// ============================================================================
 
 class FormBar extends StatelessWidget {
   final List<String> results;
@@ -107,9 +121,8 @@ class FormBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wins = results.where((r) => r == 'W').length;
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
+      margin: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: results.map((r) {
           return Expanded(
@@ -117,8 +130,8 @@ class FormBar extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.symmetric(horizontal: 0.5),
               decoration: BoxDecoration(
-                color: r == 'W' ? DSColors.deWin : DSColors.deLoss,
-                borderRadius: BorderRadius.circular(2),
+                color: r == 'W' ? DSColors.deWin : r == 'L' ? DSColors.deLoss : Colors.grey.shade700,
+                borderRadius: BorderRadius.circular(9999),
               ),
             ),
           );
@@ -128,51 +141,47 @@ class FormBar extends StatelessWidget {
   }
 }
 
-class OddsCell extends StatelessWidget {
+class OddsRow extends StatefulWidget {
   final List<String> form;
   final String topLabel;
   final String? price;
-  final String? sublabel;
-  final VoidCallback? onTap;
 
-  const OddsCell({
-    super.key,
-    required this.form,
-    required this.topLabel,
-    this.price,
-    this.sublabel,
-    this.onTap,
-  });
+  const OddsRow({super.key, required this.form, required this.topLabel, this.price});
+
+  @override
+  State<OddsRow> createState() => _OddsRowState();
+}
+
+class _OddsRowState extends State<OddsRow> {
+  bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
       child: Container(
+        width: double.infinity,
+        color: _hover ? DSColors.deSurfaceHover : DSColors.deSurface,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: DSColors.deSurface,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: DSColors.deBorder),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FormBar(results: form),
+            FormBar(results: widget.form),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  topLabel,
+                  widget.topLabel,
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     color: DSColors.deTextPrimary,
                   ),
                 ),
-                if (price != null)
+                if (widget.price != null)
                   Text(
-                    price!,
+                    widget.price!,
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -181,17 +190,6 @@ class OddsCell extends StatelessWidget {
                   ),
               ],
             ),
-            if (sublabel != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
-                  sublabel!,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: DSColors.deTextSecondary,
-                  ),
-                ),
-              ),
           ],
         ),
       ),
@@ -199,10 +197,43 @@ class OddsCell extends StatelessWidget {
   }
 }
 
-class TeamRow extends StatelessWidget {
-  final TeamInfo team;
+class MarketBox extends StatelessWidget {
+  final List<Widget> children;
 
-  const TeamRow({super.key, required this.team});
+  const MarketBox({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 110),
+      decoration: BoxDecoration(
+        color: DSColors.deSurface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: DSColors.deBorder),
+      ),
+      child: Column(
+        children: children.asMap().entries.map((entry) {
+          final index = entry.key;
+          final child = entry.value;
+          return Column(
+            children: [
+              child,
+              if (index < children.length - 1)
+                Divider(height: 0, color: DSColors.deBorder),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class TeamRow extends StatelessWidget {
+  final String name;
+  final String record;
+  final String color;
+
+  const TeamRow({super.key, required this.name, required this.record, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -212,40 +243,33 @@ class TeamRow extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: Color(int.parse(team.color.replaceFirst('#', ''), radix: 16) + 0xFF000000),
+            color: Color(int.parse(color.replaceFirst('#', ''), radix: 16) + 0xFF000000),
             shape: BoxShape.circle,
           ),
           child: Center(
             child: Text(
-              team.name.substring(0, 2).toUpperCase(),
-              style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              name.substring(0, 2).toUpperCase(),
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              team.name,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: DSColors.deTextPrimary,
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: DSColors.deTextPrimary),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-            ),
-            Text(
-              team.record,
-              style: const TextStyle(
-                fontSize: 11,
-                color: DSColors.deTextSecondary,
+              Text(
+                record,
+                style: const TextStyle(fontSize: 11, color: DSColors.deTextSecondary),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -254,8 +278,9 @@ class TeamRow extends StatelessWidget {
 
 class GameCard extends StatefulWidget {
   final GameCardData game;
+  final VoidCallback? onMatchDetails;
 
-  const GameCard({super.key, required this.game});
+  const GameCard({super.key, required this.game, this.onMatchDetails});
 
   @override
   State<GameCard> createState() => _GameCardState();
@@ -280,115 +305,59 @@ class _GameCardState extends State<GameCard> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
               'TODAY  ${g.startTime}',
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-                color: DSColors.deTextSecondary,
-              ),
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5, color: DSColors.deTextSecondary),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              spacing: 12,
+              runSpacing: 12,
               children: [
-                Row(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TeamRow(team: g.away),
-                          const SizedBox(height: 12),
-                          TeamRow(team: g.home),
-                        ],
-                      ),
+                    TeamRow(name: g.awayName, record: g.awayRecord, color: g.awayColor),
+                    const SizedBox(height: 12),
+                    TeamRow(name: g.homeName, record: g.homeRecord, color: g.homeColor),
+                  ],
+                ),
+                MarketBox(
+                  children: [
+                    OddsRow(form: g.awayForm.moneyline, topLabel: g.odds['away_ml'] ?? '--'),
+                    OddsRow(form: g.homeForm.moneyline, topLabel: g.odds['home_ml'] ?? '--'),
+                  ],
+                ),
+                MarketBox(
+                  children: [
+                    OddsRow(
+                      form: g.awayForm.spread,
+                      topLabel: g.odds['away_spread'] ?? '--',
+                      price: g.odds['away_spread'] != '--' ? g.odds['away_spread'] : null,
                     ),
-                    Expanded(
-                      flex: 4,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.away.form.moneyline,
-                                  topLabel: g.odds.moneyline['awayLabel']!,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.home.form.moneyline,
-                                  topLabel: g.odds.moneyline['homeLabel']!,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.away.form.spread,
-                                  topLabel: g.odds.spread['awayLabel']!,
-                                  price: g.odds.spread['awayPrice'],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.home.form.spread,
-                                  topLabel: g.odds.spread['homeLabel']!,
-                                  price: g.odds.spread['homePrice'],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.away.form.totalOver,
-                                  topLabel: g.odds.totalOver['label']!,
-                                  price: g.odds.totalOver['price'],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.home.form.totalOver,
-                                  topLabel: g.odds.totalOver['label']!,
-                                  price: g.odds.totalOver['price'],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.away.form.totalUnder,
-                                  topLabel: g.odds.totalUnder['label']!,
-                                  price: g.odds.totalUnder['price'],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OddsCell(
-                                  form: g.home.form.totalUnder,
-                                  topLabel: g.odds.totalUnder['label']!,
-                                  price: g.odds.totalUnder['price'],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    OddsRow(
+                      form: g.homeForm.spread,
+                      topLabel: g.odds['home_spread'] ?? '--',
+                      price: g.odds['home_spread'] != '--' ? g.odds['home_spread'] : null,
+                    ),
+                  ],
+                ),
+                MarketBox(
+                  children: [
+                    OddsRow(
+                      form: g.totalOverForm,
+                      topLabel: g.odds['over_odds'] != '' ? 'Over ${g.odds['total_line'] ?? 8.5}' : '--',
+                      price: g.odds['over_odds'] != '' ? g.odds['over_odds'] : null,
+                    ),
+                  ],
+                ),
+                MarketBox(
+                  children: [
+                    OddsRow(
+                      form: g.totalUnderForm,
+                      topLabel: g.odds['under_odds'] != '' ? 'Under ${g.odds['total_line'] ?? 8.5}' : '--',
+                      price: g.odds['under_odds'] != '' ? g.odds['under_odds'] : null,
                     ),
                   ],
                 ),
@@ -398,29 +367,18 @@ class _GameCardState extends State<GameCard> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: DSColors.deBorder),
-              ),
+              border: Border(top: BorderSide(color: DSColors.deBorder)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _expanded = !_expanded;
-                    });
-                  },
+                  onTap: () => setState(() => _expanded = !_expanded),
                   child: Row(
                     children: [
                       const Text(
                         'PUBLIC BETTING',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          color: DSColors.deTextSecondary,
-                        ),
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5, color: DSColors.deTextSecondary),
                       ),
                       const SizedBox(width: 4),
                       Icon(
@@ -432,24 +390,15 @@ class _GameCardState extends State<GameCard> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: widget.onMatchDetails ?? () {},
                   child: Row(
                     children: [
                       const Text(
                         'MATCH DETAILS',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          color: DSColors.deTextSecondary,
-                        ),
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5, color: DSColors.deTextSecondary),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(
-                        Icons.chevron_right_rounded,
-                        size: 16,
-                        color: DSColors.deTextSecondary,
-                      ),
+                      const Icon(Icons.chevron_right_rounded, size: 16, color: DSColors.deTextSecondary),
                     ],
                   ),
                 ),
@@ -459,17 +408,10 @@ class _GameCardState extends State<GameCard> {
           if (_expanded)
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: DSColors.deBorder),
-                ),
-              ),
+              decoration: BoxDecoration(border: Border(top: BorderSide(color: DSColors.deBorder))),
               child: const Text(
                 'Public betting % breakdown goes here — wire to your betting-splits endpoint.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: DSColors.deTextSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: DSColors.deTextSecondary),
               ),
             ),
         ],
@@ -477,6 +419,10 @@ class _GameCardState extends State<GameCard> {
     );
   }
 }
+
+// ============================================================================
+// MAIN GAMES SCREEN
+// ============================================================================
 
 class GamesScreen extends StatefulWidget {
   const GamesScreen({super.key});
@@ -488,69 +434,46 @@ class GamesScreen extends StatefulWidget {
 class _GamesScreenState extends State<GamesScreen> {
   String _activeSport = 'MLB';
   String _searchQuery = '';
-
+  Map<String, Map<String, String>> _oddsMap = {};
+  bool _loadingOdds = true;
   final List<String> _sportTabs = ['MLB', 'NBA', 'NCAAMB', 'Soccer', 'NHL'];
 
-  List<GameCardData> _generateMockGames() {
-    final teams = [
-      ('Yankees', '#0C2340'),
-      ('Red Sox', '#BD3039'),
-      ('Dodgers', '#005A9C'),
-      ('Padres', '#2F241D'),
-      ('Astros', '#EB6E1F'),
-      ('Rangers', '#003278'),
-      ('Mets', '#002B5C'),
-      ('Phillies', '#E8182A'),
-      ('Cubs', '#0E3386'),
-      ('Cardinals', '#C41E3A'),
-    ];
-    final records = ['48-32', '41-39', '55-26', '46-34', '44-36', '39-41', '43-38', '42-40', '50-30', '38-43'];
-    final startTimes = ['6:30 PM', '7:05 PM', '8:10 PM', '9:15 PM', '4:05 PM'];
+  @override
+  void initState() {
+    super.initState();
+    _fetchOdds();
+  }
 
-    final games = <GameCardData>[];
-    final random = DateTime.now().millisecondsSinceEpoch % 1000;
-    for (int i = 0; i < 8; i++) {
-      final awayIdx = i % teams.length;
-      final homeIdx = (i + 3) % teams.length;
-      final away = teams[awayIdx];
-      final home = teams[homeIdx];
-      final awayRecord = records[awayIdx % records.length];
-      final homeRecord = records[homeIdx % records.length];
-      final formAway = TeamFormRecord.mock(games: 10);
-      final formHome = TeamFormRecord.mock(games: 10);
-      final odds = GameOdds.mock(away: away.$1, home: home.$1);
-
-      games.add(GameCardData(
-        id: 'g$i',
-        startTime: startTimes[i % startTimes.length],
-        away: TeamInfo(
-          name: away.$1,
-          record: awayRecord,
-          color: away.$2,
-          form: formAway,
-        ),
-        home: TeamInfo(
-          name: home.$1,
-          record: homeRecord,
-          color: home.$2,
-          form: formHome,
-        ),
-        odds: odds,
-      ));
+  Future<void> _fetchOdds() async {
+    if (mounted) setState(() => _loadingOdds = true);
+    try {
+      final odds = await OddsService.fetchMLBOdds();
+      if (mounted) {
+        setState(() {
+          _oddsMap = odds;
+          _loadingOdds = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loadingOdds = false);
     }
-    return games;
   }
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final mockGames = _generateMockGames();
+    final games = appState.games;
 
-    final filtered = mockGames.where((g) {
+    final gameCards = games.map((g) {
+      final odds = _oddsMap[g.gamePk.toString()] ?? {};
+      return GameCardData.fromMLBGame(g, odds: odds);
+    }).toList();
+
+    final filtered = gameCards.where((g) {
       final query = _searchQuery.toLowerCase();
       if (query.isEmpty) return true;
-      return g.away.name.toLowerCase().contains(query) ||
-          g.home.name.toLowerCase().contains(query);
+      return g.awayName.toLowerCase().contains(query) ||
+          g.homeName.toLowerCase().contains(query);
     }).toList();
 
     return Scaffold(
@@ -572,20 +495,30 @@ class _GamesScreenState extends State<GamesScreen> {
                     ],
                     stops: const [0.0, 0.55, 1.0],
                   ),
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(16),
-                  ),
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Games',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: DSColors.deTextPrimary,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          'Games (${filtered.length})',
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: DSColors.deTextPrimary),
+                        ),
+                        const Spacer(),
+                        if (_loadingOdds)
+                          const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: DSColors.deAccent),
+                          )
+                        else
+                          IconButton(
+                            icon: const Icon(Icons.refresh_rounded, color: DSColors.deTextSecondary),
+                            onPressed: _fetchOdds,
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     Container(
@@ -598,19 +531,13 @@ class _GamesScreenState extends State<GamesScreen> {
                           final tab = _sportTabs[index];
                           final isActive = _activeSport == tab;
                           return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _activeSport = tab;
-                              });
-                            },
+                            onTap: () => setState(() => _activeSport = tab),
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: isActive
-                                        ? DSColors.deAccent
-                                        : Colors.transparent,
+                                    color: isActive ? DSColors.deAccent : Colors.transparent,
                                     width: 2,
                                   ),
                                 ),
@@ -620,9 +547,7 @@ class _GamesScreenState extends State<GamesScreen> {
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: isActive
-                                      ? DSColors.deTextPrimary
-                                      : DSColors.deTextSecondary,
+                                  color: isActive ? DSColors.deTextPrimary : DSColors.deTextSecondary,
                                 ),
                               ),
                             ),
@@ -643,21 +568,11 @@ class _GamesScreenState extends State<GamesScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Today',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: DSColors.deTextSecondary,
-                            ),
-                          ),
+                          const Text('Today', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: DSColors.deTextSecondary)),
                           const SizedBox(height: 2),
                           Text(
                             DateTime.now().toLocal().toString().substring(0, 10),
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: DSColors.deTextSecondary,
-                            ),
+                            style: const TextStyle(fontSize: 11, color: DSColors.deTextSecondary),
                           ),
                         ],
                       ),
@@ -675,25 +590,41 @@ class _GamesScreenState extends State<GamesScreen> {
                               borderSide: BorderSide.none,
                             ),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            hintStyle: const TextStyle(
-                              color: DSColors.deTextSecondary,
-                              fontSize: 13,
-                            ),
+                            hintStyle: const TextStyle(color: DSColors.deTextSecondary, fontSize: 13),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value;
-                            });
-                          },
+                          onChanged: (value) => setState(() => _searchQuery = value),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  ...filtered.map((game) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: GameCard(game: game),
-                      )),
+                  if (filtered.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('No games today. Check back later!', style: TextStyle(color: DSColors.deTextSecondary)),
+                      ),
+                    )
+                  else
+                    ...filtered.map((game) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: GameCard(
+                        key: ValueKey(game.id),
+                        game: game,
+                        onMatchDetails: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MatchDetailsScreen(
+                                gamePk: int.parse(game.id),
+                                awayTeam: game.awayName,
+                                homeTeam: game.homeName,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )),
                 ]),
               ),
             ),

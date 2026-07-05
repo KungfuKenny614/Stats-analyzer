@@ -88,7 +88,6 @@ class MLBApiService {
       }
       return [];
     } catch (e) {
-      // If the feed is not available (e.g., 404), return empty list
       print('Error fetching game players for game $gamePk: $e');
       return [];
     }
@@ -138,12 +137,9 @@ class MLBApiService {
     final sportsbooks = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars'];
 
     for (final game in games) {
-      // Skip games that are not in progress (or we can still try)
-      // If the game is scheduled or final, the live feed might not work
-      // We'll still attempt to fetch, but if it fails we skip.
       try {
         final players = await fetchGamePlayers(game.gamePk);
-        if (players.isEmpty) continue; // skip this game
+        if (players.isEmpty) continue;
         final selectedPlayers = players.take(5).toList();
         
         for (final player in selectedPlayers) {
@@ -195,12 +191,31 @@ class MLBApiService {
           }
         }
       } catch (e) {
-        // If fetching fails for this game, skip it
         print('Skipping game ${game.gamePk} due to error: $e');
         continue;
       }
     }
     return markets;
+  }
+
+  // Fetch live game feed (used for match details and live updates)
+  Future<Map<String, dynamic>> fetchGameFeed(int gamePk) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/game/$gamePk/feed/live'),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'DiamondEdge/2.4.1',
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return {};
+    } catch (e) {
+      print('Error fetching game feed: $e');
+      return {};
+    }
   }
 
   // Get team logo URL

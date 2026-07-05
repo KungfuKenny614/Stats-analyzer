@@ -1,355 +1,162 @@
 import 'package:flutter/material.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/tokens/colors.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/tokens/spacing.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/tokens/typography.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/components/navigation/global_nav.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/components/navigation/primary_nav.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/components/cards/metric_card.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/components/cards/expandable_card.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/components/tables/data_grid.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/design_system/tokens/elevation.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/providers/app_state.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/providers/auth_provider.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/widgets/performance_chart.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/widgets/hit_rate_heatmap.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/widgets/line_movement_chart.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/models/mlb_outlier_models.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/screens/watchlist_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/screens/settings_screen.dart';
+import 'package:stats_analyzer/screens/players_screen.dart';
 import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
+import 'package:stats_analyzer/screens/insights_screen.dart';
 import 'package:stats_analyzer/providers/watchlist_provider.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/services/arbitrage_scanner.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
 import 'package:stats_analyzer/services/line_movement_service.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
-import 'package:stats_analyzer/screens/games_screen.dart';
+
+// ============================================================================
+// MARKET CARD – used in the Markets tab
+// ============================================================================
+
+class MarketCard extends StatelessWidget {
+  final MLBNormalizedMarket market;
+  final MLBAnalyticsResult? analytics;
+  final VoidCallback onTap;
+
+  const MarketCard({
+    super.key,
+    required this.market,
+    required this.analytics,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isValue = analytics?.isEVPositive ?? false;
+    final hitRate = analytics?.hitRate ?? 0;
+    final ev = analytics?.ev ?? 0;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: DSColors.deSurface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: DSColors.deBorder),
+        ),
+        child: Row(
+          children: [
+            // Player initials
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: DSColors.deAccent.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  market.playerName.split(' ').map((e) => e[0]).join(''),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: DSColors.deAccent,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Player info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    market.playerName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: DSColors.deTextPrimary,
+                    ),
+                  ),
+                  Text(
+                    '${market.team} vs ${market.opponent} · ${market.marketType}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: DSColors.deTextSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Hit rate
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: hitRate >= 0.7
+                    ? DSColors.deWin.withOpacity(0.15)
+                    : hitRate >= 0.5
+                        ? DSColors.mid.withOpacity(0.15)
+                        : DSColors.deLoss.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                '${(hitRate * 100).toInt()}%',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: hitRate >= 0.7
+                      ? DSColors.deWin
+                      : hitRate >= 0.5
+                          ? DSColors.mid
+                          : DSColors.deLoss,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // EV badge
+            if (isValue)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: DSColors.deAccent.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '+${ev.toStringAsFixed(1)}% EV',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: DSColors.deAccent,
+                  ),
+                ),
+              ),
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: DSColors.deTextSecondary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// MAIN DASHBOARD
+// ============================================================================
 
 class ResearchDashboard extends StatelessWidget {
   const ResearchDashboard({super.key});
@@ -512,9 +319,9 @@ class ResearchDashboard extends StatelessWidget {
   Widget _buildMainContent(BuildContext context, AppState appState) {
     switch (appState.selectedNavIndex) {
       case 0:
-        return _buildResearchWorkspace(context, appState);
+        return _buildMarketsTab(context, appState);
       case 1:
-        return _buildResearchWorkspace(context, appState);
+        return const PlayersScreen();
       case 2:
         return const GamesScreen();
       case 3:
@@ -530,68 +337,58 @@ class ResearchDashboard extends StatelessWidget {
     }
   }
 
-  // Arbitrage Tab
-  Widget _buildArbitrageTab(BuildContext context, AppState appState) {
-    final opportunities = ArbitrageScanner.scan(appState.filteredMarkets);
-    if (opportunities.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.swap_horiz_rounded, size: 64, color: DSColors.textTertiary),
-            SizedBox(height: 16),
-            Text('No arbitrage opportunities found.'),
-          ],
-        ),
-      );
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.all(DSSpacing.lg),
-      itemCount: opportunities.length,
-      itemBuilder: (context, index) {
-        final opp = opportunities[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: DSSpacing.sm),
-          child: Padding(
-            padding: const EdgeInsets.all(DSSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.swap_horiz_rounded, color: DSColors.warning),
-                    const SizedBox(width: DSSpacing.sm),
-                    Text(
-                      '${(opp['profit'] as double).toStringAsFixed(2)}% profit',
-                      style: DSTypography.labelStrong.copyWith(
-                        color: DSColors.positive,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      opp['type'],
-                      style: DSTypography.caption,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: DSSpacing.sm),
-                Text(
-                  '${opp['player1']} (${opp['book1']}) vs ${opp['player2']} (${opp['book2']})',
-                  style: DSTypography.bodyMD,
-                ),
-                Text(
-                  'Odds: ${opp['odds1']} / ${opp['odds2']}',
-                  style: DSTypography.caption,
-                ),
-              ],
+  // ==========================================================================
+  // MARKETS TAB – card list
+  // ==========================================================================
+
+  Widget _buildMarketsTab(BuildContext context, AppState appState) {
+    final markets = appState.filteredMarkets;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Markets (${markets.length})',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: DSColors.deTextPrimary,
             ),
           ),
-        );
-      },
+          const SizedBox(height: 12),
+          Expanded(
+            child: markets.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No markets match your filters.',
+                      style: TextStyle(color: DSColors.deTextSecondary),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: markets.length,
+                    itemBuilder: (context, index) {
+                      final market = markets[index];
+                      final analytics = appState.getAnalyticsForMarket(market);
+                      return MarketCard(
+                        market: market,
+                        analytics: analytics,
+                        onTap: () {
+                          appState.selectRow(index);
+                        },
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
-  // Research workspace (existing code)
+  // ==========================================================================
+  // Research Workspace (used by Research tab)
+  // ==========================================================================
+
   Widget _buildResearchWorkspace(BuildContext context, AppState appState) {
     return Container(
       padding: const EdgeInsets.all(DSSpacing.xl),
@@ -626,7 +423,7 @@ class ResearchDashboard extends StatelessWidget {
           _buildTeamRankings(),
           const SizedBox(height: DSSpacing.xl),
 
-          // Data Grid
+          // Data Grid (keep for Research tab)
           Expanded(child: _buildDataGrid(context, appState)),
         ],
       ),
@@ -813,7 +610,7 @@ class ResearchDashboard extends StatelessWidget {
     );
   }
 
-  // Data Grid
+  // Data Grid (for Research tab)
   Widget _buildDataGrid(BuildContext context, AppState appState) {
     final markets = appState.filteredMarkets;
     final columns = [
@@ -911,6 +708,67 @@ class ResearchDashboard extends StatelessWidget {
                 color: game.isLive ? DSColors.negative : DSColors.textSecondary,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Arbitrage Tab
+  Widget _buildArbitrageTab(BuildContext context, AppState appState) {
+    final opportunities = ArbitrageScanner.scan(appState.filteredMarkets);
+    if (opportunities.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.swap_horiz_rounded, size: 64, color: DSColors.textTertiary),
+            SizedBox(height: 16),
+            Text('No arbitrage opportunities found.'),
+          ],
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.all(DSSpacing.lg),
+      itemCount: opportunities.length,
+      itemBuilder: (context, index) {
+        final opp = opportunities[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: DSSpacing.sm),
+          child: Padding(
+            padding: const EdgeInsets.all(DSSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.swap_horiz_rounded, color: DSColors.warning),
+                    const SizedBox(width: DSSpacing.sm),
+                    Text(
+                      '${(opp['profit'] as double).toStringAsFixed(2)}% profit',
+                      style: DSTypography.labelStrong.copyWith(
+                        color: DSColors.positive,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      opp['type'],
+                      style: DSTypography.caption,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: DSSpacing.sm),
+                Text(
+                  '${opp['player1']} (${opp['book1']}) vs ${opp['player2']} (${opp['book2']})',
+                  style: DSTypography.bodyMD,
+                ),
+                Text(
+                  'Odds: ${opp['odds1']} / ${opp['odds2']}',
+                  style: DSTypography.caption,
+                ),
+              ],
             ),
           ),
         );

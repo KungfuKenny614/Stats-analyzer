@@ -46,4 +46,8 @@ class DSColors {
   static const Color deClay = Color(0xFFB5542A);
   static const Color deWin = Color(0xFF22C55E);
   static const Color deLoss = Color(0xFFEF4444);
+
+  // Additional colors for Players/Insights pages
+  static const Color mid = Color(0xFFEAB308);
+  static const Color inputBg = Color(0xFF111216);
 }
