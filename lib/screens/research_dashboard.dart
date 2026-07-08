@@ -1,3 +1,5 @@
+import 'package:stats_analyzer/hover/hover_trigger.dart';
+import 'package:stats_analyzer/hover/hover_card_types.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stats_analyzer/design_system/tokens/colors.dart';

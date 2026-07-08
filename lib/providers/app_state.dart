@@ -100,6 +100,7 @@ class AppState extends ChangeNotifier {
   // ACTIONS
   // ========================================================================
 
+  // Load real data from MLB API
   Future<void> loadData() async {
     _isLoading = true;
     _error = '';
@@ -110,6 +111,7 @@ class AppState extends ChangeNotifier {
       _games = await _apiService.fetchTodayGames();
       
       if (_games.isEmpty) {
+        // Fallback to sample data if no games today
         _loadSampleData();
         _isLoading = false;
         notifyListeners();
@@ -155,12 +157,15 @@ class AppState extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
-      _loadSampleData();
+      _loadSampleData(); // fallback
       notifyListeners();
     }
   }
 
   void _loadSampleData() {
+    // Generate sample games
+    _games = _engine.generateSampleGames();
+    // Generate sample markets
     _markets = _engine.generateSampleMLBMarkets();
     _analytics = _markets.map((market) {
       final stats = _engine.generateSampleMLBStats(market.playerId, market.playerName, market.team);
@@ -213,6 +218,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Refresh data
   Future<void> refreshData() async {
     await loadData();
   }

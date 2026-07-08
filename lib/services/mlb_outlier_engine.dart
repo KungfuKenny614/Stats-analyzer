@@ -1,8 +1,32 @@
 import 'dart:math';
+import 'package:stats_analyzer/models/mlb_models.dart';
 import 'package:stats_analyzer/models/mlb_outlier_models.dart';
 
 class MLBOutlierEngine {
-  final Random random = Random(); // made public
+  final Random _random = Random();
+
+  // Generate sample MLB games (used as fallback when API fails)
+  List<MLBGame> generateSampleGames() {
+    final games = <MLBGame>[];
+    final teams = ['LAD', 'NYY', 'BOS', 'ATL', 'HOU', 'PHI', 'SFG', 'TOR'];
+    final opponents = ['SFG', 'PHI', 'TOR', 'MIA', 'TEX', 'CHC', 'STL', 'ARI'];
+    final statuses = ['Scheduled', 'In Progress', 'Final'];
+    final now = DateTime.now();
+    for (int i = 0; i < 6; i++) {
+      games.add(MLBGame(
+        gamePk: 1000000 + i,
+        status: statuses[i % statuses.length],
+        awayTeam: teams[i % teams.length],
+        homeTeam: opponents[(i + 3) % opponents.length],
+        awayScore: i % 4,
+        homeScore: (i * 2) % 5,
+        inning: i % 2 == 0 ? 'Top ${i+1}' : 'Bottom ${i+1}',
+        inningState: i % 3 == 0 ? 'Inning' : 'End',
+        gameTime: now.add(Duration(days: i, hours: 19 + i)).toIso8601String(),
+      ));
+    }
+    return games;
+  }
 
   // Generate sample MLB markets
   List<MLBNormalizedMarket> generateSampleMLBMarkets() {
@@ -20,24 +44,24 @@ class MLBOutlierEngine {
       ('Vladimir Guerrero Jr.', 'TOR'),
     ];
 
-    final marketTypes = ['Hits', 'Total Bases', 'Home Runs', 'RBI', 'Strikeouts'];
+    final marketTypes = ['Hits', 'Total Bases', 'Home Runs', 'RBI'];
     final sportsbooks = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars'];
     final opponents = ['LAD', 'NYY', 'ATL', 'PHI', 'HOU', 'TEX', 'SFG', 'CHC', 'BOS', 'TOR'];
 
     for (int i = 0; i < players.length; i++) {
       final player = players[i];
       final marketType = marketTypes[i % marketTypes.length];
-      final baseLine = marketType == 'Hits' ? 0.5 + random.nextDouble() * 1.5 :
-                       marketType == 'Total Bases' ? 1.5 + random.nextDouble() * 2.0 :
-                       marketType == 'Home Runs' ? 0.5 : 
-                       marketType == 'RBI' ? 0.5 + random.nextDouble() * 1.0 :
-                       4.5 + random.nextDouble() * 3.0;
+      final baseLine = marketType == 'Hits' ? 0.5 + _random.nextDouble() * 1.5 :
+                       marketType == 'Total Bases' ? 1.5 + _random.nextDouble() * 2.0 :
+                       marketType == 'Home Runs' ? 0.5 :
+                       marketType == 'RBI' ? 0.5 + _random.nextDouble() * 1.0 :
+                       4.5 + _random.nextDouble() * 3.0;
       
       final line = double.parse(baseLine.toStringAsFixed(1));
       final odds = <String, double>{};
       
       for (final book in sportsbooks) {
-        final spread = (random.nextDouble() - 0.5) * 20;
+        final spread = (_random.nextDouble() - 0.5) * 20;
         odds[book] = -110 + spread;
       }
 
@@ -50,7 +74,7 @@ class MLBOutlierEngine {
         odds: odds,
         gameId: 'game_$i',
         opponent: opponents[i % opponents.length],
-        isHome: random.nextBool(),
+        isHome: _random.nextBool(),
         timestamp: DateTime.now(),
       ));
     }
@@ -71,22 +95,22 @@ class MLBOutlierEngine {
         team: team,
         date: now.subtract(Duration(days: 20 - i)),
         games: 1,
-        avg: 0.200 + random.nextDouble() * 0.250,
-        obp: 0.280 + random.nextDouble() * 0.150,
-        slg: 0.350 + random.nextDouble() * 0.250,
-        ops: 0.630 + random.nextDouble() * 0.400,
-        hits: random.nextInt(4),
-        homeRuns: random.nextInt(2),
-        rbi: random.nextInt(4),
-        runs: random.nextInt(3),
-        strikeouts: random.nextInt(3),
-        walks: random.nextInt(2),
-        atBats: 3 + random.nextInt(3),
-        hardHitRate: 0.3 + random.nextDouble() * 0.4,
-        barrelRate: 0.05 + random.nextDouble() * 0.15,
-        avgExitVelocity: 85 + random.nextDouble() * 10,
+        avg: 0.200 + _random.nextDouble() * 0.250,
+        obp: 0.280 + _random.nextDouble() * 0.150,
+        slg: 0.350 + _random.nextDouble() * 0.250,
+        ops: 0.630 + _random.nextDouble() * 0.400,
+        hits: _random.nextInt(4),
+        homeRuns: _random.nextInt(2),
+        rbi: _random.nextInt(4),
+        runs: _random.nextInt(3),
+        strikeouts: _random.nextInt(3),
+        walks: _random.nextInt(2),
+        atBats: 3 + _random.nextInt(3),
+        hardHitRate: 0.3 + _random.nextDouble() * 0.4,
+        barrelRate: 0.05 + _random.nextDouble() * 0.15,
+        avgExitVelocity: 85 + _random.nextDouble() * 10,
         opponent: opponents[i % opponents.length],
-        isHome: random.nextBool(),
+        isHome: _random.nextBool(),
       ));
     }
 
