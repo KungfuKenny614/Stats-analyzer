@@ -27,24 +27,15 @@ Widget _buildMarketsTab(BuildContext context, AppState appState) {
                   itemBuilder: (context, index) {
                     final market = markets[index];
                     final analytics = appState.getAnalyticsForMarket(market);
-                    return HoverTrigger<MLBNormalizedMarket>(
-                      data: market,
-                      builder: (context, data) {
-                        return PlayerHoverCardBuilder.build(data, analytics);
-                      },
-                      onTap: () {
-                        appState.selectRow(index);
-                      },
-                      child: MarketCard(
-                        market: market,
-                        analytics: analytics,
-                        // onTap is now handled by HoverTrigger
-                      ),
-                    );
-                  },
-                ),
-        ),
-      ],
-    ),
-  );
-}
+              return HoverTrigger<MLBNormalizedMarket>(
+  data: market,
+  builder: (context, data) {
+    final analytics = appState.getAnalyticsForMarket(data);
+    return PlayerHoverCardBuilder.build(data, analytics);
+  },
+  onTap: () => appState.selectRow(index),
+  child: MarketCard(
+    market: market,
+    analytics: analytics,
+  ),
+);
